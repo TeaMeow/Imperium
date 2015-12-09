@@ -16,6 +16,12 @@ session_start();
 
 class Imperium
 {
+    private $nowOrg = '';
+    private $nowRole = '';
+    public $Orgs = [];
+    public $Roles = [];
+    
+    
     function addOrg()
     {
         
@@ -26,7 +32,22 @@ class Imperium
         
     }
     
+    /***********************************************
+    /***********************************************
+    /************** P O I N T I N G ****************
+    /***********************************************
+    /***********************************************
+     */
     
+    function org()
+    {
+        
+    }
+    
+    function role()
+    {
+        
+    }
     
     
     /***********************************************
@@ -54,6 +75,16 @@ class Imperium
         
     }
     
+    function resSave()
+    {
+        
+    }
+    
+    function resLoad()
+    {
+        
+    }
+    
     
     
     
@@ -63,9 +94,15 @@ class Imperium
     /***********************************************
     /***********************************************
     
+    
     /**
      * Allow
      */
+    
+    function alias()
+    {
+        
+    }
     
     function allow()
     {
@@ -107,6 +144,10 @@ class Imperium
     function cannot()
     {
         
+    }
+    
+    function assign()
+    {
     }
 }
 ?>
