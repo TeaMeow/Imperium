@@ -536,16 +536,22 @@ if($imperium->cannot('新增'))
 
 ```php
 /** 是否有權限「移除」任何「單身俱樂部」 所擁有的資源？ */
-if($imperium->resOrg('單身俱樂部')->can('移除'))
+if($imperium->resOrg('單身俱樂部')
+            ->can('移除'))
 
 /** 是否有權限「編輯」任何「文章」？ */
-if($imperium->resType('文章')->can('編輯'))
+if($imperium->resType('文章')
+             ->can('編輯'))
 
 /** 是否有權限「觀看」任何「管理員」所發表的「文章」？ */
-if($imperium->resRole('管理員')->resType('文章')->can('編輯'))
+if($imperium->resRole('管理員')
+            ->resType('文章')
+            ->can('編輯'))
 
 /** 是否有權限「編輯」「編號3」的「文章」？ */
-if($imperium->resType('文章')->resId(5)->can('編輯'))
+if($imperium->resType('文章')
+            ->resId(5)
+            ->can('編輯'))
 ```
 
 ## 設置
@@ -560,14 +566,14 @@ if($imperium->resType('文章')->resId(5)->can('編輯'))
 
 ```php
 ->allow('刪除')
-
 ->can('刪除')    // True
 
-
 ->deny('刪除')
-
 ->can('刪除')    // False
 ->cannot('刪除') // True
+
+->deny('%')
+->can('編輯')    // False
 ```
 
 &nbsp;
@@ -622,8 +628,8 @@ $imperium = new Imperium();
 
 /** 建立一個不屬於任何機構的角色 */
 $imperium->addRole('使用者')
-	 ->resType(['文章', '相簿', '音樂'])	// 設定目標
-	 ->allow('新增')			// 讓使用者有新增「文章」「相簿」「音樂」的權限
+         ->resType(['文章', '相簿', '音樂'])    // 設定目標
+         ->allow('新增')                        // 讓使用者有新增「文章」「相簿」「音樂」的權限
 ```
 
 &nbsp;
