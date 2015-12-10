@@ -16,6 +16,8 @@ $imperium->org('網站')
          ->role('管理員')
          ->resType('文章')
          ->allow('新增');
+         
+         
 
-exit(var_dump($imperium));
+exit(var_dump($imperium->resType('文章')->can('新增')));
 ?>
