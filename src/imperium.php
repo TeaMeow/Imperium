@@ -18,6 +18,7 @@ class Imperium
 {
     private $org            = null;
     private $role           = null;
+    private $user           = null;
     private $resOrg         = null;
     private $resRole        = null;
     private $resType        = null;
@@ -34,6 +35,8 @@ class Imperium
                                'roles' => [],
                                'users' => []
                               ];
+    
+    private $currentPermission = [];
     
 
     
@@ -80,6 +83,13 @@ class Imperium
     function role($role)
     {
         $this->role = $role;
+        
+        return $this;
+    }
+    
+    function caller($id)
+    {
+        $this->user = $id;
         
         return $this;
     }
@@ -202,6 +212,12 @@ class Imperium
         }
     }
     
+    
+    function getUserPermissionPosition()
+    {
+        
+    }
+    
 
     
     
@@ -245,6 +261,29 @@ class Imperium
     {
         
     }
+    
+    function permissionList()
+    {
+        if(!$this->user) return false;
+        
+        $list = ['allow' => [],
+                 'deny'  => []];
+        
+        foreach($this->users[$this->user] as $org => $roles)
+        {
+            foreach((array)$roles as $role)
+            {
+                $permissions = $this->orgs[$org]['roles'][$role]['permissions'];
+                $list        = array_merge_recursive($list, $permission);
+            }
+            
+            $permission = $this->orgs[$org]['permissions'];
+            $list        = array_merge_recursive($list, $permission);
+        }
+        
+        return $list;
+                
+    }
 
 
 
@@ -258,9 +297,30 @@ class Imperium
     /*
      */
     
-    function can()
+    function can($actions)
     {
+        $can = true;
         
+        /** If $can is false, just keep it as false */
+        foreach((array)$actions as $action)
+            $can = (!$can) ? $this->searchPermission(true, $action) : false;
+        
+        return $can;
+    }
+    
+    
+    function searchPermission($allow=true, $action=null)
+    {
+        $position = $this->permissionList();
+        $position = $allow ? $position['allow'] : $position['deny'];
+        $has      = false;
+        
+        /** Return false if the action wasn't in the permission list */
+        if(!isset($position[$action]))
+            return false;
+
+        
+        return $has;
     }
     
     function cannot()
@@ -268,8 +328,14 @@ class Imperium
         
     }
     
-    function assign()
+    function assign($roles)
     {
+        if(!isset($this->users[$this->user][$this->org]))
+            $this->users[$this->user][$this->org] = [];
+        
+        array_push($this->users[$this->user][$this->org], $roles);
+        
+        return $this;
     }
 }
 ?>
