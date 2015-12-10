@@ -16,21 +16,51 @@ session_start();
 
 class Imperium
 {
-    private $nowOrg = '';
-    private $nowRole = '';
-    public $orgs = [];
-    public $roles = [];
-    public $resources = [];
+    private $org            = null;
+    private $role           = null;
+    private $resOrg         = null;
+    private $resRole        = null;
+    private $resType        = null;
+    private $resId          = null;
     
+    private $alias          = [];
     
-    function addOrg()
+    public  $orgs           = [];
+    public  $roles          = [];
+    public  $users          = [];
+    
+    public  $permission     = [
+                               'orgs'  => [],
+                               'roles' => [],
+                               'users' => []
+                              ];
+    
+
+    
+    function addOrg($org, $parent=null)
     {
-        
+        /** Add the org in the org array */
+        $this->orgs[$org] = ['parent' => $parent];
+
+        /** Add the org in the permission array */
+        $this->permissions['orgs'][$org] = [
+                                            'roles'       => [],
+                                            'permissions' => []
+                                           ];
+
+        return $this;
     }
     
-    function addRole()
+    
+    
+    
+    
+    function addRole($role, $inhert=null)
     {
+        foreach((array)$role as $singleRole)
+            $this->roles[$this->org][$role] = ['inhert' => $inhert];
         
+        return $this;
     }
     
     /***********************************************
@@ -40,14 +70,18 @@ class Imperium
     /***********************************************
      */
     
-    function org()
+    function org($org)
     {
+        $this->org = $org;
         
+        return $this;
     }
     
-    function role()
+    function role($role)
     {
+        $this->role = $role;
         
+        return $this;
     }
     
     
@@ -58,22 +92,32 @@ class Imperium
     /***********************************************
      */
      
-    function resOrg()
+    function resOrg($org)
     {
+        $this->resOrg = $org;
         
+        return $this;
     }
     
-    function resRole()
+    function resRole($role)
     {
+        $this->resRole = $role;
         
+        return $this;
+    } 
+    
+    function resType($type)
+    {
+        $this->resType = $type;
+        
+        return $this;
     }
     
-    function resType()
-    {}
-    
-    function resId()
+    function resId($id)
     {
+        $this->resId = $id;
         
+        return $this;
     }
     
     function resSave()
@@ -100,20 +144,97 @@ class Imperium
      * Allow
      */
     
-    function alias()
+    function alias($name, $actions)
     {
+        $this->alias[$name] = $actions;
+        
+        return $this;
+    }
+    
+    function allow($actions, $resType=null, $resId=null)
+    {
+        
+        
+        return $this->addPermission(true, $actions);
+    }
+    
+
+    function deny($actions, $resType=null, $resId=null)
+    {
+        return $this->addPermission(false, $actions);
+    }
+    
+    
+    
+    function addPermission($allow=true, $actions)
+    {
+        if(!$this->hasInitializedPermission)
+            $this->initializePermission();
+        
+        foreach((array)$actions as $action)
+        {
+            $position = &$this->getPermissionPosition();
+
+            $position[$action][$this->resType][] = $this->generateResource();
+        }
         
     }
     
-    function allow()
+    function generateResource()
     {
-        
+        return ['org'  => $this->org,
+                'role' => $this->role,
+                'id'   => $this->id];
     }
     
-    function deny()
+    
+    function &getPermissionPosition()
     {
-        
+        switch($this->detectPermission())
+        {
+            case 'org':
+                return $this->permissions['orgs'][$this->org]['permissions'];
+                break;
+            
+            case 'orgRole':
+                return $this->permissions['orgs'][$this->org]['roles'][$this->role]['permissions'];
+                break;
+        }
     }
+    
+
+    
+    
+    function initializePermission()
+    {
+        $permission = ['allow' => [], 
+                       'deny'  => []];
+        
+        $position = &$this->getPermissionPosition();
+        $position = &$permission;
+        
+        return $this;
+    }
+    
+    function hasInitializedPermission()
+    {
+        $position = $this->getPermissionPosition();
+        
+        return isset($position);
+    }
+    
+    function detectPermission()
+    {
+        if($this->org && !$this->role)
+            return 'org';
+        elseif($this->org && $this->role)
+            return 'orgRole';
+        elseif(!$this->org && $this->role)
+            return 'role';
+        else
+            return false;
+    }
+    
     
     function allowed()
     {
