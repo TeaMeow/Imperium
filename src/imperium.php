@@ -140,6 +140,15 @@ class Imperium
         
     }
     
+    function cleanRes()
+    {
+        $this->resOrg  = '%';
+        $this->resRole = '%';
+        $this->resType = '%';
+        $this->resId   = '%';
+        
+        return $this;
+    }
     
     
     
@@ -163,8 +172,6 @@ class Imperium
     
     function allow($actions, $resType=null, $resId=null)
     {
-        
-        
         return $this->addPermission(true, $actions);
     }
     
@@ -190,6 +197,10 @@ class Imperium
             $position[$grant][$action][$this->resType][] = $this->generateResource();
         }
         
+        
+        $this->cleanRes();
+        
+        return $this;   
     }
     
     function generateResource()
@@ -321,22 +332,24 @@ class Imperium
     {
         //TODO: 增進效能
         $position = $this->permissionList();
-        
+
         $position = $allow ? $position['allow'] : $position['deny'];
         $condition = ['org'  => $this->resOrg,
                       'role' => $this->resRole,
                       'id'   => $this->resId];
+        $unconditional = ['org'  => '%',
+                          'role' => '%',
+                          'id'   => '%'];
        
         $has      = false;
         
         /** Return false if the action wasn't in the permission list */
         if(!isset($position[$action]))
             return false;
-    
-        //if($this->resType == '%')
+
         foreach($position[$action] as $resType => $resources)
             foreach($resources as $resource)
-                if($resType == $this->resType && $resource === $condition)
+                if(($resType == $this->resType || $resType == '%') && ($resource === $condition || $resource === $unconditional))
                     $has = true;
             
         
