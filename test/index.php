@@ -1,5 +1,5 @@
 <?php
-include 'src/imperium.php';
+include '../src/imperium.php';
 
 
 $imperium = new Imperium();
@@ -11,8 +11,8 @@ $imperium->addOrg('網站')
          
 $imperium->org('網站')
          ->role('管理員')
-         ->allow('移除');
+         ->resType('文章')
+         ->allow('新增');
 
 exit(var_dump($imperium));
-
 ?>
