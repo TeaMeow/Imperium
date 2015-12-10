@@ -19,10 +19,10 @@ class Imperium
     private $org            = null;
     private $role           = null;
     private $user           = null;
-    private $resOrg         = null;
-    private $resRole        = null;
-    private $resType        = null;
-    private $resId          = null;
+    private $resOrg         = '%';
+    private $resRole        = '%';
+    private $resType        = '%';
+    private $resId          = '%';
     
     private $alias          = [];
     
@@ -181,20 +181,22 @@ class Imperium
         if(!$this->hasInitializedPermission)
             $this->initializePermission();
         
+        $grant = $allow ? 'allow' : 'deny';
+        
         foreach((array)$actions as $action)
         {
             $position = &$this->getPermissionPosition();
 
-            $position[$action][$this->resType][] = $this->generateResource();
+            $position[$grant][$action][$this->resType][] = $this->generateResource();
         }
         
     }
     
     function generateResource()
     {
-        return ['org'  => $this->org,
-                'role' => $this->role,
-                'id'   => $this->id];
+        return ['org'  => $this->resOrg,
+                'role' => $this->resRole,
+                'id'   => $this->resId];
     }
     
     
@@ -266,6 +268,7 @@ class Imperium
     {
         if(!$this->user) return false;
         
+        //remove allow if in deny list have one
         $list = ['allow' => [],
                  'deny'  => []];
         
@@ -273,12 +276,17 @@ class Imperium
         {
             foreach((array)$roles as $role)
             {
-                $permissions = $this->orgs[$org]['roles'][$role]['permissions'];
-                $list        = array_merge_recursive($list, $permission);
+                
+                $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
+                
+                if(!isset($permissions))
+                    continue;
+                
+                $list        = array_merge_recursive($list, $permissions);
             }
             
-            $permission = $this->orgs[$org]['permissions'];
-            $list        = array_merge_recursive($list, $permission);
+            $permissions = $this->permissions['orgs'][$org]['permissions'];
+            $list        = array_merge_recursive($list, $permissions);
         }
         
         return $list;
@@ -303,7 +311,7 @@ class Imperium
         
         /** If $can is false, just keep it as false */
         foreach((array)$actions as $action)
-            $can = (!$can) ? $this->searchPermission(true, $action) : false;
+            $can = $can ? $this->searchPermission(true, $action) : false;
         
         return $can;
     }
@@ -311,14 +319,26 @@ class Imperium
     
     function searchPermission($allow=true, $action=null)
     {
+        //TODO: 增進效能
         $position = $this->permissionList();
+        
         $position = $allow ? $position['allow'] : $position['deny'];
+        $condition = ['org'  => $this->resOrg,
+                      'role' => $this->resRole,
+                      'id'   => $this->resId];
+       
         $has      = false;
         
         /** Return false if the action wasn't in the permission list */
         if(!isset($position[$action]))
             return false;
-
+    
+        //if($this->resType == '%')
+        foreach($position[$action] as $resType => $resources)
+            foreach($resources as $resource)
+                if($resType == $this->resType && $resource === $condition)
+                    $has = true;
+            
         
         return $has;
     }
@@ -333,7 +353,8 @@ class Imperium
         if(!isset($this->users[$this->user][$this->org]))
             $this->users[$this->user][$this->org] = [];
         
-        array_push($this->users[$this->user][$this->org], $roles);
+        foreach($roles as $role)
+            array_push($this->users[$this->user][$this->org], $role);
         
         return $this;
     }
