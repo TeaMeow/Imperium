@@ -18,8 +18,9 @@ class Imperium
 {
     private $nowOrg = '';
     private $nowRole = '';
-    public $Orgs = [];
-    public $Roles = [];
+    public $orgs = [];
+    public $roles = [];
+    public $resources = [];
     
     
     function addOrg()
