@@ -17,38 +17,43 @@ $this->permissions= [
                                       '網站' => [
                                                     'roles' => [
                                                                    '管理員' => [
-                                                                                   ['action'   => '移除',
-                                                                                    'grant'    => 1,
-                                                                                    'resource' => [
-                                                                                                      'type' => '文章',
-                                                                                                      'org'  => '單身俱樂部',
-                                                                                                      'role' => '管理員',
-                                                                                                      'id'   => 3
-                                                                                                  ]
-                                                                                   ],
-                                                                                    
-                                                                                   ['action'   => '編輯',
-                                                                                    'grant'    => 1,
-                                                                                    'resource' => [
-                                                                                                      'type' => '文章',
-                                                                                                      'org'  => null,
-                                                                                                      'role' => null,
-                                                                                                      'id'   => null
-                                                                                                   ]
-                                                                                   ]
+                                                                                   'permissions' => [
+                                                                                                        'allow' => [
+                                                                                                                       '檢視' => [
+                                                                                                                                     '文章' => [
+                                                                                                                                                   'org'  => '單身俱樂部',
+                                                                                                                                                   'role' => '管理員',
+                                                                                                                                                   'id'   => 3
+                                                                                                                                               ]
+                                                                                                                                 ]
+                                                                                                                   ],
+                                                                                                        
+                                                                                                        'deny'  => [
+                                                                                                                       '刪除' => [
+                                                                                                                                     '文章' => [
+                                                                                                                                                   'org'  => '單身俱樂部',
+                                                                                                                                                   'role' => '管理員',
+                                                                                                                                                   'id'   => 3
+                                                                                                                                               ]
+                                                                                                                                 ]
+                                                                                                                   ]
+                                                                                                    ]
                                                                                ]
                                                                ],
                                                 
                                                         
                                                     'permissions' => [
-                                                                        'action'   => '檢視',
-                                                                        'grant'    => 1,
-                                                                        'resource' => [
-                                                                                          'type' => '文章',
-                                                                                          'org'  => null,
-                                                                                          'role' => null,
-                                                                                          'id'   => null
-                                                                                      ]
+                                                                        'allow' => [
+                                                                                       '檢視' => [
+                                                                                                     '文章' => [
+                                                                                                                   'org'  => '單身俱樂部',
+                                                                                                                   'role' => '管理員',
+                                                                                                                   'id'   => 3
+                                                                                                               ]
+                                                                                                 ]
+                                                                                   ],
+                                                                                   
+                                                                        'deny'  => []
                                                                      ]
                                                 ]
                                   ],
@@ -56,14 +61,17 @@ $this->permissions= [
                         'users' => [
                                        '3' => [
                                                   'permissions' => [
-                                                                       'action'   => '檢視',
-                                                                       'grant'    => 1,
-                                                                       'resource' => [
-                                                                                         'type' => '文章',
-                                                                                         'org'  => null,
-                                                                                         'role' => null,
-                                                                                         'id'   => null
-                                                                                     ]
+                                                                       'allow' => [
+                                                                                       '檢視' => [
+                                                                                                     '文章' => [
+                                                                                                                   'org'  => '單身俱樂部',
+                                                                                                                   'role' => '管理員',
+                                                                                                                   'id'   => 3
+                                                                                                               ]
+                                                                                                 ]
+                                                                                   ],
+                                                                                   
+                                                                        'deny'  => []
                                                                    ]
                                               ]
                                    ]
@@ -73,9 +81,7 @@ $this->permissions= [
 
 
 $this->users['1'] = [
-                        '網站' => [
-                                      'role' => '管理員'
-                                  ]
+                        '網站' => ['管理員', '版主']
                     ];
 
 
