@@ -14,7 +14,6 @@ $imperium->addOrg('網站')
          
 $imperium->org('網站')
          ->role('管理員')
-         ->resType('文章')
          ->allow('新增');
          
          
