@@ -154,9 +154,9 @@ class Imperium
      * @return Imperium
      */
     
-    function addRole(array $roles, $inherit=null)
+    function addRole($roles, $inherit=null)
     {
-        foreach($roles as $singleRole)
+        foreach((array)$roles as $singleRole)
             $this->roles[$this->org][$role] = ['inherit' => $inherit];
         
         return $this;
@@ -708,12 +708,12 @@ class Imperium
      * @return bool
      */
     
-    function can(array $actions)
+    function can($actions)
     {
         $can = true;
         
         /** If $can is false, just keep it as false */
-        foreach($actions as $action)
+        foreach((array)$actions as $action)
             $can = $can ? $this->searchPermission(true, $action) : false;
         
         return $can;
@@ -730,12 +730,12 @@ class Imperium
      * @return bool
      */
     
-    function cannot(array $actions)
+    function cannot($actions)
     {
         $cannot = true;
         
         
-        foreach($actions as $action)
+        foreach((array)$actions as $action)
         {
             $isAllowed = $this->searchPermission(true, $action);
             $isDenied  = $this->searchPermission(false, $action);
@@ -792,14 +792,14 @@ class Imperium
      * @return Imperium
      */
      
-    function assign(array $roles)
+    function assign($roles)
     {
         $org = &$this->users[$this->user][$this->org];
         
         if(!isset($org))
             $org = [];
         
-        foreach($roles as $role)
+        foreach((array)$roles as $role)
             array_push($org, $role);
         
         return $this;
