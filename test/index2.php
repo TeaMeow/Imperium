@@ -47,6 +47,24 @@ $A = ['allow' => [
                                                        'role' => '管理員',
                                                        'id'   => 3
                                                    ]
+                                               ],
+                                     
+                                     '%' => [
+                                                   [
+                                                       'org'  => '單身俱樂部',
+                                                       'role' => '管理員',
+                                                       'id'   => 5
+                                                   ]
+                                               ]
+                                 ],
+                        
+                        '%' => [
+                                     '文章' => [
+                                                   [
+                                                       'org'  => '單身俱樂部',
+                                                       'role' => '管理員',
+                                                       'id'   => 2
+                                                   ]
                                                ]
                                  ]
                    ]];
@@ -64,27 +82,14 @@ $unconditional = ['org'  => '%',
 $allowed = $A['allow'];
 $denied  = $A['deny'];
 
-$allowedClean = $A['allow'];
+$allowedClean = [];
 
-foreach($allowed as $action => $resTypes)
-{
-        
-    foreach($resTypes as $resType => $resources)
-    {
 
-        foreach($resources as $resourceIndex => $resource)
-        {
-           
-            foreach((array)$denied[$action][$resType] as $key => $deniedResource)
-            {
-                if($resource === $deniedResource)
-                    unset($allowedClean[$action][$resType][$key]);
-            }
-  
-        }
-    }
-}
 
-exit(var_dump($allowedClean));
+
+
+
+
+exit(var_dump(array_diff_assoc($allowed, $denied)));
 
 ?>

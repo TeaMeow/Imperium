@@ -12,11 +12,12 @@ $imperium->addOrg('網站')
          ->org('網站')
          ->assign(['管理員', '版主']);
          
-$imperium->org('網站')
-         ->role('管理員')
-         ->allow('新增');
+$imperium->self()
+         ->resType('相簿')
+         ->resId(3)
+         ->allow('%');
          
-         
+  
 
-exit(var_dump($imperium->resType('文章')->can('新增')));
+exit(var_dump($imperium->resType('相簿')->resId(3)->cannot('d')));
 ?>
