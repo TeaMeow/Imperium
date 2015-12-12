@@ -315,9 +315,7 @@ class Imperium
         $permissions = $this->permissions['users'][$this->user]['permissions'];
         $list        = array_merge_recursive($list, $permissions);
         
-        
-        if($allowedOnly)
-            return $this->permissionListFilter($list, $allowedOnly);
+
         
         return $list;
                 
@@ -325,18 +323,7 @@ class Imperium
 
     function permissionListFilter($list, $allowed=true)
     {
-        $filtered = $list['allow'];
         
-        if($allowed)
-        {
-            foreach($filtered as $action => $resTypes)
-            {
-                foreach($resTypes as $resources)
-                {
-                    
-                }
-            }       
-        }
     }
 
 
@@ -367,9 +354,11 @@ class Imperium
         $position = $this->permissionList(true);
 
         $position = $allow ? $position['allow'] : $position['deny'];
+        
         $condition = ['org'  => $this->resOrg,
                       'role' => $this->resRole,
                       'id'   => $this->resId];
+                      
         $unconditional = ['org'  => '%',
                           'role' => '%',
                           'id'   => '%'];
@@ -387,7 +376,18 @@ class Imperium
     
     function cannot($actions)
     {
-        return $this->can();
+        $cannot = true;
+        
+        
+        foreach((array)$actions as $action)
+        {
+            $isAllowed = $this->searchPermission(true, $action);
+            $isDenied  = $this->searchPermission(false, $action);
+            
+            $cannot = $cannot ? !(!$isDenied && $isAllowed) : true;
+        }    
+
+        return $cannot;
     }
     
     
