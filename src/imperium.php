@@ -654,7 +654,7 @@ class Imperium
                  'deny'  => []];
         
         //inherit support
-        foreach($this->users[$this->user] as $org => $roles)
+        foreach((array)$this->users[$this->user] as $org => $roles)
         {
             foreach((array)$roles as $role)
             {
@@ -664,15 +664,15 @@ class Imperium
                 if(!isset($permissions))
                     continue;
                 
-                $list        = array_merge_recursive($list, $permissions);
+                $list        = array_merge_recursive($list, (array)$permissions);
             }
             
             $permissions = $this->permissions['orgs'][$org]['permissions'];
-            $list        = array_merge_recursive($list, $permissions);
+            $list        = array_merge_recursive($list, (array)$permissions);
         }
         
         $permissions = $this->permissions['users'][$this->user]['permissions'];
-        $list        = array_merge_recursive($list, $permissions);
+        $list        = array_merge_recursive($list, (array)$permissions);
         
 
         
