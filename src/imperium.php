@@ -418,6 +418,11 @@ class Imperium
     //ALIAS
     function allow($actions, $resType=null, $resId=null)
     {
+        if($resType)
+            $this->resType = $resType;
+        if($resId)
+            $this->resId   = $resId;
+        
         return $this->processPermission(true, $actions);
     }
     
@@ -436,6 +441,11 @@ class Imperium
      
     function deny($actions, $resType=null, $resId=null)
     {
+        if($resType)
+            $this->resType = $resType;
+        if($resId)
+            $this->resId   = $resId;
+            
         return $this->processPermission(false, $actions);
     }
     
