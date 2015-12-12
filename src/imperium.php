@@ -16,29 +16,117 @@ session_start();
 
 class Imperium
 {
+    /**
+     * Organization pointer
+     * 
+     * @var null|string
+     */
+     
     private $org            = null;
+    
+    /**
+     * Role pointer
+     * 
+     * @var null|string
+     */
+     
     private $role           = null;
+    
+    /**
+     * User pointer
+     * 
+     * @var null|string
+     */
+     
     private $user           = null;
+    
+    /**
+     * Organization pointer of the resource
+     *
+     * @var string
+     */
+     
     private $resOrg         = '%';
+    
+    /**
+     * Role pointer of the resource
+     *
+     * @var string
+     */
+     
     private $resRole        = '%';
+    
+    /**
+     * Type pointer of the resource
+     *
+     * @var string
+     */
+     
     private $resType        = '%';
+    
+    /**
+     * Identifier pointer of the resource
+     *
+     * @var string
+     */
+     
     private $resId          = '%';
     
+    /**
+     * Stores the aliases
+     * 
+     * @var array
+     */
+     
     private $alias          = [];
     
+    /**
+     * Stores the organizations
+     * 
+     * @var array
+     */
+     
     public  $orgs           = [];
+    
+    /**
+     * Stores the roles of the organizations
+     * 
+     * @var array
+     */
+     
     public  $roles          = [];
+    
+    /**
+     * Stores the users and which organizations they belong
+     * 
+     * @var array
+     */
+     
     public  $users          = [];
     
+    /**
+     * Stores the permissions of the organizations and the users
+     * 
+     * @var array
+     */
+     
     public  $permission     = [
-                               'orgs'  => [],
-                               'roles' => [],
-                               'users' => []
+                                  'orgs'  => [],
+                                  'roles' => [],
+                                  'users' => []
                               ];
-    
-    private $currentPermission = [];
-    
 
+    
+    
+    
+    /**
+     * Add a single organization
+     * 
+     * @param string $org      The name of the organization.
+     * @param string $parent   The parent organization of the organization.
+     * 
+     * @return Imperium
+     */
     
     function addOrg($org, $parent=null)
     {
@@ -57,20 +145,38 @@ class Imperium
     
     
     
+    /**
+     * Add roles
+     * 
+     * @param array|string $roles     The names of the roles.
+     * @param string       $inherit   The name of the role which the roles should inherit from.
+     * 
+     * @return Imperium
+     */
     
-    function addRole($role, $inhert=null)
+    function addRole(array $roles, $inherit=null)
     {
-        foreach((array)$role as $singleRole)
-            $this->roles[$this->org][$role] = ['inhert' => $inhert];
+        foreach($roles as $singleRole)
+            $this->roles[$this->org][$role] = ['inherit' => $inherit];
         
         return $this;
     }
+    
+    
+    
     
     /***********************************************
     /***********************************************
     /************** P O I N T I N G ****************
     /***********************************************
     /***********************************************
+    
+    /**
+     * Organization selector
+     * 
+     * @param string $org   The name of the organization you want to select.
+     * 
+     * @return Imperium
      */
     
     function org($org)
@@ -80,12 +186,34 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Role selector
+     * 
+     * @param string $role   The name of the role you wnat to select.
+     * 
+     * @return Imperium
+     */
+     
     function role($role)
     {
         $this->role = $role;
         
         return $this;
     }
+    
+    
+    
+    
+    /**
+     * Set the user
+     * 
+     * @param int $id   The id of the user.
+     * 
+     * @return Imperium
+     */
     
     function caller($id)
     {
@@ -94,20 +222,41 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Self selector
+     * 
+     * Remove all the selected organizations and the roles, 
+     * now point to ourself directly.
+     * 
+     * @return Imperium
+     */
+     
     function self()
     {
-        $this->org = null;
+        $this->org  = null;
         $this->role = null;
         
         return $this;
     }
     
-    
+
+
+
     /***********************************************
     /***********************************************
     /************* R E S O U R C E S ***************
     /***********************************************
     /***********************************************
+    
+    /**
+     * Specify the organization of the resources
+     * 
+     * @param string $org   The name of the organization you want to sepcify.
+     * 
+     * @return Imperium
      */
      
     function resOrg($org)
@@ -117,6 +266,17 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Specify the role of the resources
+     * 
+     * @param string $role   The name of the role you want to sepcify.
+     * 
+     * @return Imperium
+     */
+     
     function resRole($role)
     {
         $this->resRole = $role;
@@ -124,6 +284,17 @@ class Imperium
         return $this;
     } 
     
+    
+    
+    
+    /**
+     * Specify the type of the resources
+     * 
+     * @param string $org   The name of the type you want to specify.
+     * 
+     * @return Imperium
+     */
+     
     function resType($type)
     {
         $this->resType = $type;
@@ -131,6 +302,17 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Sepcify the identifier of the resources
+     * 
+     * @param string $id   The identifier you want to specify.
+     * 
+     * @return Imperium
+     */
+     
     function resId($id)
     {
         $this->resId = $id;
@@ -138,16 +320,53 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Save the specified data
+     * 
+     * @return array
+     */
+     
     function resSave()
     {
-        
+        return ['resOrg'  => $this->resOrg,
+                'resRole' => $this->resRole,
+                'resType' => $this->resType,
+                'resId'   => $this->resId];
     }
     
-    function resLoad()
+    
+    
+    
+    /**
+     * Load the specified data
+     * 
+     * @param array $savedData   The data which saved by the resSave().
+     * 
+     * @return Imperium
+     */
+     
+    function resLoad($savedData)
     {
+        $this->resOrg  = $savedData['resOrg'];
+        $this->resRole = $savedData['resRole'];
+        $this->resType = $savedData['resType'];
+        $this->resId   = $savedData['resId'];
         
+        return $this;
     }
     
+    
+    
+    
+    /**
+     * Clean the selectors of the resources
+     * 
+     * @return Imperium
+     */
+     
     function cleanRes()
     {
         $this->resOrg  = '%';
@@ -160,15 +379,20 @@ class Imperium
     
     
     
+    
     /***********************************************
     /***********************************************
     /************ A L L O W & D E N Y **************
     /***********************************************
     /***********************************************
     
-    
     /**
-     * Allow
+     * Add an alias
+     * 
+     * @param string $name      The name of the alias.
+     * @param array  $actions   The actions of the alias.
+     * 
+     * @return Imperium
      */
     
     function alias($name, $actions)
@@ -178,20 +402,58 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Allow a permission
+     * 
+     * @param array|string $actions   The name of the actions.
+     * @param null|string  $resType   The type of the resources.
+     * @param null|int     $resId     The identifier of the resources.
+     * 
+     * @return Imperium
+     */
+     
+    //ALIAS
     function allow($actions, $resType=null, $resId=null)
     {
-        return $this->addPermission(true, $actions);
+        return $this->processPermission(true, $actions);
     }
     
-
+    
+    
+    
+    /**
+     * Deny a permission
+     * 
+     * @param array|string $actions   The name of the actions.
+     * @param null|string  $resType   The type of the resources.
+     * @param null|int     $resId     The identifier of the resources.
+     * 
+     * @return Imperium
+     */
+     
     function deny($actions, $resType=null, $resId=null)
     {
-        return $this->addPermission(false, $actions);
+        return $this->processPermission(false, $actions);
     }
     
     
     
-    function addPermission($allow=true, $actions)
+    
+    /**
+     * Process a permission
+     * 
+     * Add a single or multiple permissions to the allowed or denied list.
+     * 
+     * @param bool         $allow     Set true if this is a positive permission or false when it's a negative permission.
+     * @param array|string $actions   The name of the actions.
+     * 
+     * @return Imperium
+     */
+    
+    function processPermission($allow=true, $actions)
     {
         if(!$this->hasInitializedPermission)
             $this->initializePermission();
@@ -211,6 +473,15 @@ class Imperium
         return $this;   
     }
     
+    
+    
+    
+    /**
+     * Generate an array of the current specify resource
+     * 
+     * @return array
+     */
+     
     function generateResource()
     {
         return ['org'  => $this->resOrg,
@@ -218,6 +489,16 @@ class Imperium
                 'id'   => $this->resId];
     }
     
+    
+    
+    
+    /**
+     * Get permission position
+     * 
+     * Return the right permission array by the current pointer of the organization, role or the user.
+     * 
+     * @return array
+     */
     
     function &getPermissionPosition()
     {
@@ -238,13 +519,13 @@ class Imperium
     }
     
     
-    function getUserPermissionPosition()
-    {
-        
-    }
     
-
     
+    /**
+     * Initialize the permission
+     * 
+     * @return Imperium
+     */
     
     function initializePermission()
     {
@@ -257,6 +538,15 @@ class Imperium
         return $this;
     }
     
+    
+    
+    
+    /**
+     * Has the current permission position initialized?
+     * 
+     * @return bool
+     */
+     
     function hasInitializedPermission()
     {
         $position = $this->getPermissionPosition();
@@ -264,6 +554,17 @@ class Imperium
         return isset($position);
     }
     
+    
+    
+    
+    /**
+     * Detect the type of the permission
+     * 
+     * Detected by the pointers.
+     * 
+     * @return string
+     */
+     
     function detectPermission()
     {
         if($this->org && !$this->role)
@@ -277,16 +578,44 @@ class Imperium
     }
     
     
+    
+    
+    /**
+     * Return all allowed permissions
+     * 
+     * @return array
+     */
+    
     function allowed()
     {
         
     }
-    
+
+
+
+
+    /**
+     * Return all denied permissions
+     * 
+     * @return array
+     */
+     
     function denied()
     {
         
     }
     
+    
+    
+    
+    /**
+     * Get a list which has allowed and denied permissions in it
+     * 
+     * @param bool $allowedOnly   Set true if you want to get a allowed permissions list only.
+     * 
+     * @return array
+     */
+     
     function permissionList($allowedOnly=false)
     {
         if(!$this->user) return false;
@@ -320,11 +649,8 @@ class Imperium
         return $list;
                 
     }
-
-    function permissionListFilter($list, $allowed=true)
-    {
-        
-    }
+    
+    
 
 
     /***********************************************
@@ -333,27 +659,24 @@ class Imperium
     /***********************************************
     /***********************************************
 
-    /*
+
+    
+    
+    /**
+     * Search the permission list
+     * 
+     * @param bool   $inAllowedList   Set true if you want to search in the allowed list or denied list when falsed.
+     * @param string $action          The name if the action.
+     * 
+     * @return bool
      */
-    
-    function can($actions)
-    {
-        $can = true;
-        
-        /** If $can is false, just keep it as false */
-        foreach((array)$actions as $action)
-            $can = $can ? $this->searchPermission(true, $action) : false;
-        
-        return $can;
-    }
-    
-    
-    function searchPermission($allow=true, $action=null)
+     
+    function searchPermission($inAllowedList=true, $action=null)
     {
         //TODO: 增進效能
         $position = $this->permissionList(true);
 
-        $position = $allow ? $position['allow'] : $position['deny'];
+        $position = $inAllowedList ? $position['allow'] : $position['deny'];
         
         $condition = ['org'  => $this->resOrg,
                       'role' => $this->resRole,
@@ -374,12 +697,45 @@ class Imperium
         return $has;
     }
     
-    function cannot($actions)
+    
+    
+    
+    /**
+     * Can do something?
+     * 
+     * @param array|string $actions   The name of the actions.
+     * 
+     * @return bool
+     */
+    
+    function can(array $actions)
+    {
+        $can = true;
+        
+        /** If $can is false, just keep it as false */
+        foreach($actions as $action)
+            $can = $can ? $this->searchPermission(true, $action) : false;
+        
+        return $can;
+    }
+    
+    
+    
+    
+    /**
+     * Cannot do something?
+     *
+     * @param array|string $actions   The name of the actions.
+     * 
+     * @return bool
+     */
+    
+    function cannot(array $actions)
     {
         $cannot = true;
         
         
-        foreach((array)$actions as $action)
+        foreach($actions as $action)
         {
             $isAllowed = $this->searchPermission(true, $action);
             $isDenied  = $this->searchPermission(false, $action);
@@ -391,18 +747,52 @@ class Imperium
     }
     
     
+    
+    
+    /**
+     * Has the user initialized?
+     * 
+     * @param int $id   The identifier of the user.
+     * 
+     * @return bool
+     */
+    
     function hasInitializedUser($id)
     {
         return isset($this->users[$this->user]);
     }
     
+    
+    
+    
+    /**
+     * Initialize a user
+     * 
+     * @param int $id   The identifier of the user.
+     * 
+     * @return Imperium
+     */
+     
     function initializeUser($id)
     {  
         $this->users[$this->user]['orgs']        = [];
         $this->users[$this->user]['permissions'] = [];
+        
+        return $this;
     }
     
-    function assign($roles)
+    
+    
+    
+    /**
+     * Assign a single or multiple roles
+     * 
+     * @param array|string $roles   The name of the roles.
+     * 
+     * @return Imperium
+     */
+     
+    function assign(array $roles)
     {
         $org = &$this->users[$this->user][$this->org];
         
