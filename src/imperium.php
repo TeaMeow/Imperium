@@ -94,6 +94,14 @@ class Imperium
         return $this;
     }
     
+    function self()
+    {
+        $this->org = null;
+        $this->role = null;
+        
+        return $this;
+    }
+    
     
     /***********************************************
     /***********************************************
@@ -222,6 +230,10 @@ class Imperium
             case 'orgRole':
                 return $this->permissions['orgs'][$this->org]['roles'][$this->role]['permissions'];
                 break;
+                
+            case 'user':
+                return $this->permissions['users'][$this->user]['permissions'];
+                break;
         }
     }
     
@@ -261,7 +273,7 @@ class Imperium
         elseif(!$this->org && $this->role)
             return 'role';
         else
-            return false;
+            return 'user';
     }
     
     
@@ -275,7 +287,7 @@ class Imperium
         
     }
     
-    function permissionList()
+    function permissionList($allowedOnly=false)
     {
         if(!$this->user) return false;
         
@@ -300,11 +312,32 @@ class Imperium
             $list        = array_merge_recursive($list, $permissions);
         }
         
+        $permissions = $this->permissions['users'][$this->user]['permissions'];
+        $list        = array_merge_recursive($list, $permissions);
+        
+        
+        if($allowedOnly)
+            return $this->permissionListFilter($list, $allowedOnly);
+        
         return $list;
                 
     }
 
-
+    function permissionListFilter($list, $allowed=true)
+    {
+        $filtered = $list['allow'];
+        
+        if($allowed)
+        {
+            foreach($filtered as $action => $resTypes)
+            {
+                foreach($resTypes as $resources)
+                {
+                    
+                }
+            }       
+        }
+    }
 
 
     /***********************************************
@@ -331,7 +364,7 @@ class Imperium
     function searchPermission($allow=true, $action=null)
     {
         //TODO: 增進效能
-        $position = $this->permissionList();
+        $position = $this->permissionList(true);
 
         $position = $allow ? $position['allow'] : $position['deny'];
         $condition = ['org'  => $this->resOrg,
@@ -342,32 +375,42 @@ class Imperium
                           'id'   => '%'];
        
         $has      = false;
-        
-        /** Return false if the action wasn't in the permission list */
-        if(!isset($position[$action]))
-            return false;
+       
+        foreach([$position[$action], $position['%']] as $action)
+            foreach((array)$action as $resType => $resources)
+                foreach($resources as $resource)
+                    if(($resType == $this->resType || $resType == '%') && ($resource === $condition || $resource === $unconditional))
+                        $has = true;
 
-        foreach($position[$action] as $resType => $resources)
-            foreach($resources as $resource)
-                if(($resType == $this->resType || $resType == '%') && ($resource === $condition || $resource === $unconditional))
-                    $has = true;
-            
-        
         return $has;
     }
     
-    function cannot()
+    function cannot($actions)
     {
-        
+        return $this->can();
+    }
+    
+    
+    function hasInitializedUser($id)
+    {
+        return isset($this->users[$this->user]);
+    }
+    
+    function initializeUser($id)
+    {  
+        $this->users[$this->user]['orgs']        = [];
+        $this->users[$this->user]['permissions'] = [];
     }
     
     function assign($roles)
     {
-        if(!isset($this->users[$this->user][$this->org]))
-            $this->users[$this->user][$this->org] = [];
+        $org = &$this->users[$this->user][$this->org];
+        
+        if(!isset($org))
+            $org = [];
         
         foreach($roles as $role)
-            array_push($this->users[$this->user][$this->org], $role);
+            array_push($org, $role);
         
         return $this;
     }
