@@ -718,8 +718,8 @@ class Imperium
             {
                 foreach($resources as $resource)
                 {
-                    
-                    if($resType == $this->resType || $resType == '%' || $this->resType == '%')
+                    //|| $this->resType == '%'
+                    if($resType == $this->resType || $resType == '%' )
                     {
                         
                         switch($this->detectResource())
