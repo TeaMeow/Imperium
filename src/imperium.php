@@ -581,6 +581,35 @@ class Imperium
     
     
     /**
+     * Detect the type of the resource
+     * 
+     * @return string
+     */
+    
+    function detectResource()
+    {
+        if    ($this->resOrg  == '%' && $this->resRole == '%' && $this->resId == '%')
+            return 'any';
+        elseif($this->resOrg  != '%' && $this->resRole != '%' && $this->resId != '%')
+            return 'all';
+        elseif($this->resOrg  != '%' && $this->resRole != '%' && $this->resId == '%')
+            return 'orgRole';
+        elseif($this->resOrg  != '%' && $this->resRole == '%' && $this->resId != '%')
+            return 'orgId';
+        elseif($this->resOrg  == '%' && $this->resRole != '%' && $this->resId != '%')
+            return 'roleId';
+        elseif($this->resOrg  != '%')
+            return 'org';
+        elseif($this->resRole != '%')
+            return 'role';
+        elseif($this->resId   != '%')
+            return 'id';
+    }
+    
+    
+    
+    
+    /**
      * Return all allowed permissions
      * 
      * @return array
@@ -624,6 +653,7 @@ class Imperium
         $list = ['allow' => [],
                  'deny'  => []];
         
+        //inherit support
         foreach($this->users[$this->user] as $org => $roles)
         {
             foreach((array)$roles as $role)
@@ -677,22 +707,73 @@ class Imperium
         $position = $this->permissionList(true);
 
         $position = $inAllowedList ? $position['allow'] : $position['deny'];
+
+       
+        $has = false;
         
-        $condition = ['org'  => $this->resOrg,
-                      'role' => $this->resRole,
-                      'id'   => $this->resId];
-                      
-        $unconditional = ['org'  => '%',
-                          'role' => '%',
-                          'id'   => '%'];
-       
-        $has      = false;
-       
         foreach([$position[$action], $position['%']] as $action)
+        {
+            
             foreach((array)$action as $resType => $resources)
+            {
                 foreach($resources as $resource)
-                    if(($resType == $this->resType || $resType == '%') && ($resource === $condition || $resource === $unconditional))
-                        $has = true;
+                {
+                    
+                    if($resType == $this->resType || $resType == '%' || $this->resType == '%')
+                    {
+                        
+                        switch($this->detectResource())
+                        {
+                            case 'any':
+                                $has = true;
+                                break;
+                                
+                            case 'all':
+                                if(($resource['org']   == $this->resOrg  && $resource['role'] == $this->resRole && $resource['id'] == $this->resId) ||
+                                   ($resource['org']   == '%'            && $resource['role'] == '%'            && $resource['id'] == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'orgRole':
+                                if(($resource['org']  == $this->resOrg  && $resource['role'] == $this->resRole) ||
+                                   ($resource['org']  == '%'            && $resource['role'] == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'orgId':
+                                if(($resource['org']  == $this->resOrg  && $resource['id']   == $this->resId) ||
+                                   ($resource['org']  == '%'            && $resource['id']   == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'roleId':
+                                if(($resource['role'] == $this->resRole && $resource['id']   == $this->resId) ||
+                                   ($resource['role'] == '%'            && $resource['id']   == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'org':
+                                if($resource['org']  == $this->resOrg  || $resource['org']  == '%')
+                                   $has = true;
+                                break;
+                                
+                            case 'role':
+                                if($resource['role'] == $this->resRole || $resource['role'] == '%')
+                                   $has = true;
+                                break;
+                                
+                            case 'id':
+                                if($resource['id']   == $this->resId   || $resource['id']   == '%')
+                                   $has = true;
+                                break;
+                        }
+                    }
+                }
+            }
+        }       
+        
+                        //if(($resType == $this->resType || $resType == '%') && ($resource === $condition))
+                            //$has = true;
 
         return $has;
     }
