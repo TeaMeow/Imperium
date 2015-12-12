@@ -5,11 +5,11 @@ $this->orgs['網站']  = [
                        ];
 
 $this->roles['網站'] = [
-                           '管理員' => ['inhert' => null],
+                           '管理員' => ['inherit' => null],
                                      
-                           '版主'   => ['inhert' => null],
+                           '版主'   => ['inherit' => null],
                                      
-                           '使用者' => ['inhert' => null]
+                           '使用者' => ['inherit' => null]
                        ];
 
 $this->permissions= [
@@ -94,7 +94,7 @@ $this->permissions= [
 
 
 
-$this->users['1'] = [
+$this->users['1'] = [   
                         '網站' => ['管理員', '版主']
                     ];
 
