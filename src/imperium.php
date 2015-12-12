@@ -598,7 +598,7 @@ class Imperium
     
     function detectResource()
     {
-        if    ($this->resOrg  == '%' && $this->resRole == '%' && $this->resId == '%')
+        if    ($this->resOrg  == '%' && $this->resRole == '%' && $this->resId == '%' && $this->resType == '%')
             return 'any';
         elseif($this->resOrg  != '%' && $this->resRole != '%' && $this->resId != '%')
             return 'all';
@@ -731,7 +731,7 @@ class Imperium
                     //|| $this->resType == '%'
                     if($resType == $this->resType || $resType == '%' )
                     {
-                        
+
                         switch($this->detectResource())
                         {
                             case 'any':
@@ -739,6 +739,7 @@ class Imperium
                                 break;
                                 
                             case 'all':
+                            case NULL :
                                 if(($resource['org']   == $this->resOrg  && $resource['role'] == $this->resRole && $resource['id'] == $this->resId) ||
                                    ($resource['org']   == '%'            && $resource['role'] == '%'            && $resource['id'] == '%'))
                                    $has = true;
@@ -776,6 +777,7 @@ class Imperium
                                 if($resource['id']   == $this->resId   || $resource['id']   == '%')
                                    $has = true;
                                 break;
+
                         }
                     }
                 }
@@ -795,12 +797,19 @@ class Imperium
      * Can do something?
      * 
      * @param array|string $actions   The name of the actions.
+     * @param null|string  $resType   The type of the resources.
+     * @param null|int     $resId     The identifier of the resources.
      * 
      * @return bool
      */
     
-    function can($actions)
+    function can($actions, $resType=null, $resId=null)
     {
+        if($resType)
+            $this->resType = $resType;
+        if($resId)
+            $this->resId   = $resId;
+            
         $can = true;
         
         /** If $can is false, just keep it as false */
@@ -817,12 +826,19 @@ class Imperium
      * Cannot do something?
      *
      * @param array|string $actions   The name of the actions.
+     * @param null|string  $resType   The type of the resources.
+     * @param null|int     $resId     The identifier of the resources.
      * 
      * @return bool
      */
     
-    function cannot($actions)
+    function cannot($actions, $resType=null, $resId=null)
     {
+        if($resType)
+            $this->resType = $resType;
+        if($resId)
+            $this->resId   = $resId;
+            
         $cannot = true;
         
         
