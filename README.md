@@ -91,6 +91,8 @@
 
 8. [架構](#架構)
 
+9. [可參考文件](#可參考文件)
+
 &nbsp;
 
 # 範例
@@ -481,3 +483,17 @@ $imperium->resLoad($Data)
 可以開啟 [test/structure.php](test/structure.php)。
 
 &nbsp;
+
+# 可參考文件
+
+這裡是幾個可能會啟發你創意，或是更能讓你了解這類東西的連結。
+
+[Role Based Access Control in PHP](http://www.sitepoint.com/role-based-access-control-in-php/)
+
+[efficiently/authority-controller](https://github.com/efficiently/authority-controller)
+
+[BeatSwitch/lock](https://github.com/BeatSwitch/lock)
+
+[OWASP/rbac](https://github.com/OWASP/rbac)
+
+[machuga/authority](https://github.com/machuga/authority)
