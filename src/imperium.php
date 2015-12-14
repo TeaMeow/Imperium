@@ -110,11 +110,11 @@ class Imperium
      * @var array
      */
      
-    public  $permission     = [
-                                  'orgs'  => [],
-                                  'roles' => [],
-                                  'users' => []
-                              ];
+    public  $permissions     = [
+                                   'orgs'  => [],
+                                   'roles' => [],
+                                   'users' => []
+                               ];
 
     
     
