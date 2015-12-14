@@ -422,7 +422,7 @@ class Imperium
             $this->resType = $resType;
         if($resId)
             $this->resId   = $resId;
-        
+        //MAKE SURE IT;'S NOT IN DENY'
         return $this->processPermission(true, $actions);
     }
     
@@ -811,6 +811,10 @@ class Imperium
             $this->resId   = $resId;
             
         $can = true;
+        
+        if($this->cannot($actions, $resType, $resId))
+            return false;
+        
         
         /** If $can is false, just keep it as false */
         foreach((array)$actions as $action)
