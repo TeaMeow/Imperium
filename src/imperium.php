@@ -179,7 +179,7 @@ class Imperium
      * @return Imperium
      */
     
-    function org($org)
+    function org($org=null)
     {
         $this->org = $org;
         
@@ -197,7 +197,7 @@ class Imperium
      * @return Imperium
      */
      
-    function role($role)
+    function role($role=null)
     {
         $this->role = $role;
         
@@ -382,28 +382,9 @@ class Imperium
     
     /***********************************************
     /***********************************************
-    /************ A L L O W & D E N Y **************
+    /************ P E R M I S S I O N **************
     /***********************************************
     /***********************************************
-    
-    /**
-     * Add an alias
-     * 
-     * @param string $name      The name of the alias.
-     * @param array  $actions   The actions of the alias.
-     * 
-     * @return Imperium
-     */
-    
-    function alias($name, $actions)
-    {
-        $this->alias[$name] = $actions;
-        
-        return $this;
-    }
-    
-    
-    
     
     /**
      * Allow a permission
@@ -415,14 +396,16 @@ class Imperium
      * @return Imperium
      */
      
-    //ALIAS
+
     function allow($actions, $resType=null, $resId=null)
     {
         if($resType)
             $this->resType = $resType;
         if($resId)
             $this->resId   = $resId;
-        //MAKE SURE IT;'S NOT IN DENY'
+        
+        $actions = $this->analyzeActions($actions);
+        
         return $this->processPermission(true, $actions);
     }
     
@@ -445,6 +428,8 @@ class Imperium
             $this->resType = $resType;
         if($resId)
             $this->resId   = $resId;
+            
+        $actions = $this->analyzeActions($actions);
             
         return $this->processPermission(false, $actions);
     }
@@ -478,6 +463,7 @@ class Imperium
         }
         
         
+        $this->self();
         $this->cleanRes();
         
         return $this;   
@@ -691,15 +677,6 @@ class Imperium
     }
     
     
-
-
-    /***********************************************
-    /***********************************************
-    /************ C A N & C A N N O T **************
-    /***********************************************
-    /***********************************************
-
-
     
     
     /**
@@ -790,9 +767,15 @@ class Imperium
         return $has;
     }
     
-    
-    
-    
+
+
+
+    /***********************************************
+    /***********************************************
+    /************ C A N & C A N N O T **************
+    /***********************************************
+    /***********************************************
+
     /**
      * Can do something?
      * 
@@ -812,12 +795,14 @@ class Imperium
             
         $can = true;
         
+        $actions = $this->analyzeActions($actions);
+        
         if($this->cannot($actions, $resType, $resId))
             return false;
         
         
         /** If $can is false, just keep it as false */
-        foreach((array)$actions as $action)
+        foreach($actions as $action)
             $can = $can ? $this->searchPermission(true, $action) : false;
         
         return $can;
@@ -845,8 +830,9 @@ class Imperium
             
         $cannot = true;
         
+        $actions = $this->analyzeActions($actions);
         
-        foreach((array)$actions as $action)
+        foreach($actions as $action)
         {
             $isAllowed = $this->searchPermission(true, $action);
             $isDenied  = $this->searchPermission(false, $action);
@@ -859,7 +845,13 @@ class Imperium
     
     
     
-    
+
+    /***********************************************
+    /***********************************************
+    /************ U S E R   H E L P E R ************
+    /***********************************************
+    /***********************************************
+     
     /**
      * Has the user initialized?
      * 
@@ -893,7 +885,68 @@ class Imperium
     }
     
     
+
+
+    /***********************************************
+    /***********************************************
+    /****************** A L I A S ******************
+    /***********************************************
+    /***********************************************
+
+    /**
+     * Add an alias
+     * 
+     * @param string $name      The name of the alias.
+     * @param array  $actions   The actions of the alias.
+     * 
+     * @return Imperium
+     */
     
+    function alias($name, $actions)
+    {
+        $this->alias[$name] = $actions;
+        
+        return $this;
+    }
+    
+    
+    
+    
+    /**
+     * Analyze the actions and convert the alias to the actions.
+     * 
+     * @param array|string $actions   The actions which may include some aliases.
+     * 
+     * @return array                  The array which has actions only and no any aliases.
+     */
+    
+    function analyzeActions($actions)
+    {
+        $list = [];
+        
+        foreach((array)$actions as $action)
+        {
+            /** Analyze this action because it's an alias */
+            if(isset($this->alias[$action]))
+                foreach((array)$this->alias[$action] as $aliasAction)
+                    array_push($list, $aliasAction);
+                
+            /** Push the action to the array if it's not an alias */
+            else
+                array_push($list, $action);
+            
+        }
+        
+        return $list;
+    }
+    
+    
+    
+    /***********************************************
+    /***********************************************
+    /***************** H E L P E R *****************
+    /***********************************************
+    /***********************************************
     
     /**
      * Assign a single or multiple roles
