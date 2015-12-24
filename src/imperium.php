@@ -115,6 +115,14 @@ class Imperium
                                    'roles' => [],
                                    'users' => []
                                ];
+    
+    /**
+     * Used to check if the current user is a guest or not.
+     * 
+     * @var bool
+     */
+     
+    public $is_guest         = true;
 
     
     
@@ -217,7 +225,17 @@ class Imperium
     
     function caller($id)
     {
-        $this->user = $id;
+        /** Reset the user if false or null */
+        if($id === false || $id === null) 
+        {
+            $this->user     = null;
+            $this->is_guest = true;
+            
+            return $this;
+        }
+        
+        $this->user     = $id;
+        $this->is_guest = false;
         
         return $this;
     }
@@ -240,6 +258,20 @@ class Imperium
         $this->role = null;
         
         return $this;
+    }
+    
+    
+    
+    
+    /**
+     * User selector
+     * 
+     * @return Imperirum
+     */
+    
+    function user()
+    {
+        
     }
     
 
@@ -569,8 +601,10 @@ class Imperium
             return 'orgRole';
         elseif(!$this->org && $this->role)
             return 'role';
-        else
+        elseif(!$this->org && !$this->role && !$this->is_guest)
             return 'user';
+        else
+            return 'guest';
     }
     
     
