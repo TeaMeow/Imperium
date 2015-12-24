@@ -295,6 +295,9 @@ class Imperium
     {
         $this->resOrg = $org;
         
+        if(!$org)
+            $this->resOrg = '%';
+        
         return $this;
     }
     
@@ -312,6 +315,9 @@ class Imperium
     function resRole($role)
     {
         $this->resRole = $role;
+        
+        if(!$role)
+            $this->resRole = '%';
         
         return $this;
     } 
@@ -331,6 +337,9 @@ class Imperium
     {
         $this->resType = $type;
         
+        if(!$type)
+            $this->resType = '%';
+        
         return $this;
     }
     
@@ -349,6 +358,9 @@ class Imperium
     {
         $this->resId = $id;
         
+        if(!$id)
+            $this->resId = '%';
+            
         return $this;
     }
     
