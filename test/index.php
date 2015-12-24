@@ -22,7 +22,10 @@ $imperium->org('網站')
          ->alias('管理', ['編輯', '新增', '移除'])
          ->allow('管理', '%');
          
+$imperium->self()
+         ->allow('管理', '%');
 
 
-exit(var_dump($imperium->can('新增', '相簿')));
+
+exit(var_dump($imperium->is_guest));
 ?>
