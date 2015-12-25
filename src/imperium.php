@@ -122,7 +122,7 @@ class Imperium
      * @var bool
      */
      
-    public $is_guest         = true;
+    public $isGuest         = true;
     
     /**
      * Relax check toggle, for can() and cannot(), when this is true,
@@ -234,17 +234,18 @@ class Imperium
     
     function caller($id)
     {
+
+        $this->user     = $id;
+        $this->isGuest  = false;
+        
         /** Reset the user if false or null */
         if($id === false || $id === null) 
         {
             $this->user     = null;
-            $this->is_guest = true;
+            $this->isGuest  = true;
             
             return $this;
         }
-        
-        $this->user     = $id;
-        $this->is_guest = false;
         
         return $this;
     }
@@ -623,7 +624,7 @@ class Imperium
             return 'orgRole';
         elseif(!$this->org && $this->role)
             return 'role';
-        elseif(!$this->org && !$this->role && !$this->is_guest)
+        elseif(!$this->org && !$this->role && !$this->isGuest)
             return 'user';
         else
             return 'guest';

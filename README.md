@@ -348,14 +348,14 @@ if($imperium->can('編輯', '文章'))
 
 ### 是否為訪客？
 
-透過 `is_guest`（**不是 `is_guest()`**） 來確認是否為訪客，
+透過 `isGuest`（**不是 `isGuest()`**） 來確認是否為訪客，
 
 訪客的定義為：沒有透過 `caller()` 設置成為一個使用者，
 
 倘若你當初用 `caller()` 設置了一個 `false` 或是 `null` 的使用者，**也會被認定為訪客**。
 
 ```php
-if($imperium->is_guest)
+if($imperium->isGuest)
     echo "大哥，你是路人啊！";
 ```
 
