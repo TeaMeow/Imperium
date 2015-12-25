@@ -11,5 +11,5 @@ $imperium->self()
 
 
 
-exit(var_dump($imperium->canAny('編輯', ['文章', '刪除'])));
+exit(var_dump($imperium->cannotAny('編輯', ['文章'])));
 ?>
