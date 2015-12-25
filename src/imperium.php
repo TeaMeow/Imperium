@@ -738,8 +738,9 @@ class Imperium
     /**
      * Search the permission list
      * 
-     * @param bool   $inAllowedList   Set true if you want to search in the allowed list or denied list when falsed.
-     * @param string $action          The name if the action.
+     * @param bool         $inAllowedList     Set true if you want to search in the allowed list or denied list when falsed.
+     * @param string       $action            The name if the action.
+     * @param array|string $pointingResType   The type(s) of the resources.
      * 
      * @return bool
      */
