@@ -744,8 +744,10 @@ class Imperium
      * @return bool
      */
      
-    function searchPermission($inAllowedList=true, $action=null)
+    function searchPermission($inAllowedList=true, $action=null, $pointingResType=null)
     {
+        $pointingResType = $pointingResType ?: $this->resType;
+        
         //TODO: 增進效能
         $position = $this->permissionList(true);
 
@@ -762,59 +764,55 @@ class Imperium
                 foreach($resources as $resource)
                 {
                     //|| $this->resType == '%'
-                    foreach((array)$this->resType as $pointingResType)
+                    if($resType == $pointingResType || $resType == '%' )
                     {
-                    
-                        if($resType == $pointingResType || $resType == '%' )
+
+                        switch($this->detectResource())
                         {
-    
-                            switch($this->detectResource())
-                            {
-                                case 'any':
-                                    $has = true;
-                                    break;
-                                    
-                                case 'all':
-                                case NULL :
-                                    if(($resource['org']   == $this->resOrg  && $resource['role'] == $this->resRole && $resource['id'] == $this->resId) ||
-                                       ($resource['org']   == '%'            && $resource['role'] == '%'            && $resource['id'] == '%'))
-                                       $has = true;
-                                    break;
-                                    
-                                case 'orgRole':
-                                    if(($resource['org']  == $this->resOrg  && $resource['role'] == $this->resRole) ||
-                                       ($resource['org']  == '%'            && $resource['role'] == '%'))
-                                       $has = true;
-                                    break;
-                                    
-                                case 'orgId':
-                                    if(($resource['org']  == $this->resOrg  && $resource['id']   == $this->resId) ||
-                                       ($resource['org']  == '%'            && $resource['id']   == '%'))
-                                       $has = true;
-                                    break;
-                                    
-                                case 'roleId':
-                                    if(($resource['role'] == $this->resRole && $resource['id']   == $this->resId) ||
-                                       ($resource['role'] == '%'            && $resource['id']   == '%'))
-                                       $has = true;
-                                    break;
-                                    
-                                case 'org':
-                                    if($resource['org']  == $this->resOrg  || $resource['org']  == '%')
-                                       $has = true;
-                                    break;
-                                    
-                                case 'role':
-                                    if($resource['role'] == $this->resRole || $resource['role'] == '%')
-                                       $has = true;
-                                    break;
-                                    
-                                case 'id':
-                                    if($resource['id']   == $this->resId   || $resource['id']   == '%')
-                                       $has = true;
-                                    break;
-    
-                            }
+                            case 'any':
+                                $has = true;
+                                break;
+                                
+                            case 'all':
+                            case NULL :
+                                if(($resource['org']   == $this->resOrg  && $resource['role'] == $this->resRole && $resource['id'] == $this->resId) ||
+                                   ($resource['org']   == '%'            && $resource['role'] == '%'            && $resource['id'] == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'orgRole':
+                                if(($resource['org']  == $this->resOrg  && $resource['role'] == $this->resRole) ||
+                                   ($resource['org']  == '%'            && $resource['role'] == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'orgId':
+                                if(($resource['org']  == $this->resOrg  && $resource['id']   == $this->resId) ||
+                                   ($resource['org']  == '%'            && $resource['id']   == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'roleId':
+                                if(($resource['role'] == $this->resRole && $resource['id']   == $this->resId) ||
+                                   ($resource['role'] == '%'            && $resource['id']   == '%'))
+                                   $has = true;
+                                break;
+                                
+                            case 'org':
+                                if($resource['org']  == $this->resOrg  || $resource['org']  == '%')
+                                   $has = true;
+                                break;
+                                
+                            case 'role':
+                                if($resource['role'] == $this->resRole || $resource['role'] == '%')
+                                   $has = true;
+                                break;
+                                
+                            case 'id':
+                                if($resource['id']   == $this->resId   || $resource['id']   == '%')
+                                   $has = true;
+                                break;
+
                         }
                     }
                 }
@@ -863,17 +861,20 @@ class Imperium
         
         foreach($actions as $action)
         {
-            if($this->relax)
+            foreach((array)$this->resType as $resType)
             {
-                /** Stop if can, because it's relax mode */
-                $can = $this->searchPermission(true, $action);
-                
-                if($can) break;
-            }
-            else
-            {
-                /** If $can is false, just keep it as false till the end */
-                $can = $can ? $this->searchPermission(true, $action) : false;
+                if($this->relax)
+                {
+                    /** Stop if can, because it's relax mode */
+                    $can = $this->searchPermission(true, $action, $resType);
+                    
+                    if($can) break;
+                }
+                else
+                {
+                    /** If $can is false, just keep it as false till the end */
+                    $can = $can ? $this->searchPermission(true, $action, $resType) : false;
+                }
             }
         }
         
@@ -928,20 +929,23 @@ class Imperium
         
         foreach($actions as $action)
         {
-            $isAllowed = $this->searchPermission(true, $action);
-            $isDenied  = $this->searchPermission(false, $action);
-            
-            if($this->relax)
+            foreach((array)$this->resType as $resType)
             {
-                $cannot = ($isDenied || !$isAllowed);
                 
-                if($cannot) break;
+                $isAllowed = $this->searchPermission(true, $action, $resType);
+                $isDenied  = $this->searchPermission(false, $action, $resType);
+                
+                if($this->relax)
+                {
+                    $cannot = ($isDenied || !$isAllowed);
+                   
+                    if($cannot) break;
+                }
+                else
+                {
+                    $cannot = $cannot ? ($isDenied || !$isAllowed) : false;
+                }
             }
-            else
-            {
-                $cannot = $cannot ? ($isDenied || !$isAllowed) : true;
-            }
-            
         }    
 
         $this->relax = false;
