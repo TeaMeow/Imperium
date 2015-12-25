@@ -4,28 +4,12 @@ include '../src/imperium.php';
 
 $imperium = new Imperium();
 
-$imperium->addOrg('網站')
-         ->addRole('管理員')
-         ->addRole('版主')
-         ->addRole('使用者')
-         ->caller(1);
+$imperium->caller(1);
 
-$imperium->org('網站')
-         ->assign('管理員');
-         
-$imperium->org('網站')
-         ->role('使用者')
-         ->alias('管理', ['編輯', '新增', '移除'])
-         ->deny('管理', '%');         
-         
-$imperium->org('網站')
-         ->alias('管理', ['編輯', '新增', '移除'])
-         ->allow('管理', '%');
-         
 $imperium->self()
-         ->allow('管理', '%');
+         ->allow('編輯', ['文章', '相簿']);
 
 
 
-exit(var_dump($imperium->is_guest));
+exit(var_dump($imperium->canAny('編輯', ['文章', '刪除'])));
 ?>
