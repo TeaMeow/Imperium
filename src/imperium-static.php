@@ -23,7 +23,7 @@ class Imperium
      * @var null|string
      */
 
-    private $org            = null;
+    private static $org            = null;
 
     /**
      * Role pointer
@@ -31,7 +31,7 @@ class Imperium
      * @var null|string
      */
 
-    private $role           = null;
+    private static $role           = null;
 
     /**
      * User pointer
@@ -39,7 +39,7 @@ class Imperium
      * @var null|string
      */
 
-    private $user           = null;
+    private static $user           = null;
 
     /**
      * Organization pointer of the resource
@@ -47,7 +47,7 @@ class Imperium
      * @var string
      */
 
-    private $resOrg         = '%';
+    private static $resOrg         = '%';
 
     /**
      * Role pointer of the resource
@@ -55,7 +55,7 @@ class Imperium
      * @var string
      */
 
-    private $resRole        = '%';
+    private static $resRole        = '%';
 
     /**
      * Type pointer of the resource
@@ -63,7 +63,7 @@ class Imperium
      * @var string
      */
 
-    private $resType        = '%';
+    private static $resType        = '%';
 
     /**
      * Identifier pointer of the resource
@@ -71,7 +71,7 @@ class Imperium
      * @var string
      */
 
-    private $resId          = '%';
+    private static $resId          = '%';
 
     /**
      * Stores the aliases
@@ -79,7 +79,7 @@ class Imperium
      * @var array
      */
 
-    private $alias          = [];
+    private static $alias          = [];
 
     /**
      * Stores the organizations
@@ -87,7 +87,7 @@ class Imperium
      * @var array
      */
 
-    public  $orgs           = [];
+    public  static $orgs           = [];
 
     /**
      * Stores the roles of the organizations
@@ -95,7 +95,7 @@ class Imperium
      * @var array
      */
 
-    public  $roles          = [];
+    public  static $roles          = [];
 
     /**
      * Stores the users and which organizations they belong
@@ -103,7 +103,7 @@ class Imperium
      * @var array
      */
 
-    public  $users          = [];
+    public  static $users          = [];
 
     /**
      * Stores the permissions of the organizations and the users
@@ -111,11 +111,11 @@ class Imperium
      * @var array
      */
 
-    public  $permissions     = [
-                                   'orgs'  => [],
-                                   'roles' => [],
-                                   'users' => []
-                               ];
+    public  static $permissions     = [
+                                       'orgs'  => [],
+                                       'roles' => [],
+                                       'users' => []
+                                      ];
 
     /**
      * Used to check if the current user is a guest or not.
@@ -123,7 +123,7 @@ class Imperium
      * @var bool
      */
 
-    public $isGuest         = true;
+    public static $isGuest         = true;
 
     /**
      * Relax check toggle, for can() and cannot(), when this is true,
@@ -132,7 +132,7 @@ class Imperium
      * @var bool
      */
 
-    private $relax           = false;
+    private static $relax           = false;
 
 
 
@@ -146,18 +146,18 @@ class Imperium
      * @return Imperium
      */
 
-    function addOrg($org, $parent=null)
+    static function addOrg($org, $parent=null)
     {
         /** Add the org in the org array */
-        $this->orgs[$org] = ['parent' => $parent];
+        self::$orgs[$org] = ['parent' => $parent];
 
         /** Add the org in the permission array */
-        $this->permissions['orgs'][$org] = [
+        self::$permissions['orgs'][$org] = [
                                             'roles'       => [],
                                             'permissions' => []
                                            ];
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -172,12 +172,12 @@ class Imperium
      * @return Imperium
      */
 
-    function addRole($roles, $inherit=null)
+    static function addRole($roles, $inherit=null)
     {
         foreach((array)$roles as $singleRole)
-            $this->roles[$this->org][$role] = ['inherit' => $inherit];
+            self::$roles[self::$org][$role] = ['inherit' => $inherit];
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -197,11 +197,11 @@ class Imperium
      * @return Imperium
      */
 
-    function org($org=null)
+    static function org($org=null)
     {
-        $this->org = $org;
+        self::$org = $org;
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -215,11 +215,11 @@ class Imperium
      * @return Imperium
      */
 
-    function role($role=null)
+    static function role($role=null)
     {
-        $this->role = $role;
+        self::$role = $role;
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -233,22 +233,21 @@ class Imperium
      * @return Imperium
      */
 
-    function caller($id)
+    static function caller($id)
     {
-
-        $this->user     = $id;
-        $this->isGuest  = false;
+        self::$user     = $id;
+        self::$isGuest  = false;
 
         /** Reset the user if false or null */
         if($id === false || $id === null)
         {
-            $this->user     = null;
-            $this->isGuest  = true;
+            self::$user     = null;
+            self::$isGuest  = true;
 
-            return $this;
+            return __CLASS__;
         }
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -263,12 +262,12 @@ class Imperium
      * @return Imperium
      */
 
-    function self()
+    static function self()
     {
-        $this->org  = null;
-        $this->role = null;
+        self::$org  = null;
+        self::$role = null;
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -280,7 +279,7 @@ class Imperium
      * @return Imperirum
      */
 
-    function user()
+    static function user()
     {
 
     }
@@ -302,14 +301,14 @@ class Imperium
      * @return Imperium
      */
 
-    function resOrg($org)
+    static function resOrg($org)
     {
-        $this->resOrg = $org;
+        self::$resOrg = $org;
 
         if(!$org)
-            $this->resOrg = '%';
+            self::$resOrg = '%';
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -323,14 +322,14 @@ class Imperium
      * @return Imperium
      */
 
-    function resRole($role)
+    static function resRole($role)
     {
-        $this->resRole = $role;
+        self::$resRole = $role;
 
         if(!$role)
-            $this->resRole = '%';
+            self::$resRole = '%';
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -344,14 +343,14 @@ class Imperium
      * @return Imperium
      */
 
-    function resType($type)
+    static function resType($type)
     {
-        $this->resType = $type;
+        self::$resType = $type;
 
         if(!$type)
-            $this->resType = '%';
+            self::$resType = '%';
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -365,14 +364,14 @@ class Imperium
      * @return Imperium
      */
 
-    function resId($id)
+    static function resId($id)
     {
-        $this->resId = $id;
+        self::$resId = $id;
 
         if(!$id)
-            $this->resId = '%';
+            self::$resId = '%';
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -384,12 +383,12 @@ class Imperium
      * @return array
      */
 
-    function resSave()
+    static function resSave()
     {
-        return ['resOrg'  => $this->resOrg,
-                'resRole' => $this->resRole,
-                'resType' => $this->resType,
-                'resId'   => $this->resId];
+        return ['resOrg'  => self::$resOrg,
+                'resRole' => self::$resRole,
+                'resType' => self::$resType,
+                'resId'   => self::$resId];
     }
 
 
@@ -403,14 +402,14 @@ class Imperium
      * @return Imperium
      */
 
-    function resLoad($savedData)
+    static function resLoad($savedData)
     {
-        $this->resOrg  = $savedData['resOrg'];
-        $this->resRole = $savedData['resRole'];
-        $this->resType = $savedData['resType'];
-        $this->resId   = $savedData['resId'];
+        self::$resOrg  = $savedData['resOrg'];
+        self::$resRole = $savedData['resRole'];
+        self::$resType = $savedData['resType'];
+        self::$resId   = $savedData['resId'];
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -422,14 +421,14 @@ class Imperium
      * @return Imperium
      */
 
-    function cleanRes()
+    static function cleanRes()
     {
-        $this->resOrg  = '%';
-        $this->resRole = '%';
-        $this->resType = '%';
-        $this->resId   = '%';
+        self::$resOrg  = '%';
+        self::$resRole = '%';
+        self::$resType = '%';
+        self::$resId   = '%';
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -452,16 +451,16 @@ class Imperium
      */
 
 
-    function allow($actions, $resType=null, $resId=null)
+    static function allow($actions, $resType=null, $resId=null)
     {
         if($resType)
-            $this->resType = $resType;
+            self::$resType = $resType;
         if($resId)
-            $this->resId   = $resId;
+            self::$resId   = $resId;
 
-        $actions = $this->analyzeActions($actions);
+        $actions = self::analyzeActions($actions);
 
-        return $this->processPermission(true, $actions);
+        return self::processPermission(true, $actions);
     }
 
 
@@ -477,16 +476,16 @@ class Imperium
      * @return Imperium
      */
 
-    function deny($actions, $resType=null, $resId=null)
+    static function deny($actions, $resType=null, $resId=null)
     {
         if($resType)
-            $this->resType = $resType;
+            self::$resType = $resType;
         if($resId)
-            $this->resId   = $resId;
+            self::$resId   = $resId;
 
-        $actions = $this->analyzeActions($actions);
+        $actions = self::analyzeActions($actions);
 
-        return $this->processPermission(false, $actions);
+        return self::processPermission(false, $actions);
     }
 
 
@@ -503,26 +502,26 @@ class Imperium
      * @return Imperium
      */
 
-    function processPermission($allow=true, $actions)
+    static function processPermission($allow=true, $actions)
     {
-        if(!$this->hasInitializedPermission)
-            $this->initializePermission();
+        if(!self::hasInitializedPermission)
+            self::initializePermission();
 
         $grant = $allow ? 'allow' : 'deny';
 
         foreach((array)$actions as $action)
         {
-            $position = &$this->getPermissionPosition();
+            $position = &self::getPermissionPosition();
 
-            foreach((array)$this->resType as $resType)
-                $position[$grant][$action][$resType][] = $this->generateResource();
+            foreach((array)self::$resType as $resType)
+                $position[$grant][$action][$resType][] = self::generateResource();
         }
 
 
-        $this->self();
-        $this->cleanRes();
+        self::self();
+        self::cleanRes();
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -534,11 +533,11 @@ class Imperium
      * @return array
      */
 
-    function generateResource()
+    static function generateResource()
     {
-        return ['org'  => $this->resOrg,
-                'role' => $this->resRole,
-                'id'   => $this->resId];
+        return ['org'  => self::$resOrg,
+                'role' => self::$resRole,
+                'id'   => self::$resId];
     }
 
 
@@ -552,20 +551,20 @@ class Imperium
      * @return array
      */
 
-    function &getPermissionPosition()
+    static function &getPermissionPosition()
     {
-        switch($this->detectPermission())
+        switch(self::detectPermission())
         {
             case 'org':
-                return $this->permissions['orgs'][$this->org]['permissions'];
+                return self::$permissions['orgs'][self::$org]['permissions'];
                 break;
 
             case 'orgRole':
-                return $this->permissions['orgs'][$this->org]['roles'][$this->role]['permissions'];
+                return self::$permissions['orgs'][self::$org]['roles'][self::$role]['permissions'];
                 break;
 
             case 'user':
-                return $this->permissions['users'][$this->user]['permissions'];
+                return self::$permissions['users'][self::$user]['permissions'];
                 break;
         }
     }
@@ -579,15 +578,15 @@ class Imperium
      * @return Imperium
      */
 
-    function initializePermission()
+    static function initializePermission()
     {
         $permission = ['allow' => [],
                        'deny'  => []];
 
-        $position = &$this->getPermissionPosition();
+        $position = &self::getPermissionPosition();
         $position = &$permission;
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -599,9 +598,9 @@ class Imperium
      * @return bool
      */
 
-    function hasInitializedPermission()
+    static function hasInitializedPermission()
     {
-        $position = $this->getPermissionPosition();
+        $position = self::getPermissionPosition();
 
         return isset($position);
     }
@@ -617,15 +616,15 @@ class Imperium
      * @return string
      */
 
-    function detectPermission()
+    static function detectPermission()
     {
-        if($this->org && !$this->role)
+        if(self::$org && !self::$role)
             return 'org';
-        elseif($this->org && $this->role)
+        elseif(self::$org && self::$role)
             return 'orgRole';
-        elseif(!$this->org && $this->role)
+        elseif(!self::$org && self::$role)
             return 'role';
-        elseif(!$this->org && !$this->role && !$this->isGuest)
+        elseif(!self::$org && !self::$role && !self::$isGuest)
             return 'user';
         else
             return 'guest';
@@ -640,23 +639,23 @@ class Imperium
      * @return string
      */
 
-    function detectResource()
+    static function detectResource()
     {
-        if    ($this->resOrg  == '%' && $this->resRole == '%' && $this->resId == '%' && $this->resType == '%')
+        if    (self::$resOrg  == '%' && self::$resRole == '%' && self::$resId == '%' && self::$resType == '%')
             return 'any';
-        elseif($this->resOrg  != '%' && $this->resRole != '%' && $this->resId != '%')
+        elseif(self::$resOrg  != '%' && self::$resRole != '%' && self::$resId != '%')
             return 'all';
-        elseif($this->resOrg  != '%' && $this->resRole != '%' && $this->resId == '%')
+        elseif(self::$resOrg  != '%' && self::$resRole != '%' && self::$resId == '%')
             return 'orgRole';
-        elseif($this->resOrg  != '%' && $this->resRole == '%' && $this->resId != '%')
+        elseif(self::$resOrg  != '%' && self::$resRole == '%' && self::$resId != '%')
             return 'orgId';
-        elseif($this->resOrg  == '%' && $this->resRole != '%' && $this->resId != '%')
+        elseif(self::$resOrg  == '%' && self::$resRole != '%' && self::$resId != '%')
             return 'roleId';
-        elseif($this->resOrg  != '%')
+        elseif(self::$resOrg  != '%')
             return 'org';
-        elseif($this->resRole != '%')
+        elseif(self::$resRole != '%')
             return 'role';
-        elseif($this->resId   != '%')
+        elseif(self::$resId   != '%')
             return 'id';
     }
 
@@ -669,7 +668,7 @@ class Imperium
      * @return array
      */
 
-    function allowed()
+    static function allowed()
     {
 
     }
@@ -683,7 +682,7 @@ class Imperium
      * @return array
      */
 
-    function denied()
+    static function denied()
     {
 
     }
@@ -699,24 +698,21 @@ class Imperium
      * @return array
      */
 
-    function permissionList($allowedOnly=false)
+    static function permissionList($allowedOnly=false)
     {
-        if(!$this->user) return false;
+        if(!self::$user) return false;
 
         //remove allow if in deny list have one
         $list = ['allow' => [],
                  'deny'  => []];
-        
-        //if(!isset($this->users[$this->user]))
-        //    return $list;
-        
+
         //inherit support
-        foreach((array)$this->users[$this->user] as $org => $roles)
+        foreach((array)self::$users[self::$user] as $org => $roles)
         {
             foreach((array)$roles as $role)
             {
 
-                $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
+                $permissions = self::$permissions['orgs'][$org]['roles'][$role]['permissions'];
 
                 if(!isset($permissions))
                     continue;
@@ -724,11 +720,11 @@ class Imperium
                 $list        = array_merge_recursive($list, (array)$permissions);
             }
 
-            $permissions = $this->permissions['orgs'][$org]['permissions'];
+            $permissions = self::$permissions['orgs'][$org]['permissions'];
             $list        = array_merge_recursive($list, (array)$permissions);
         }
 
-        $permissions = $this->permissions['users'][$this->user]['permissions'];
+        $permissions = self::$permissions['users'][self::$user]['permissions'];
         $list        = array_merge_recursive($list, (array)$permissions);
 
 
@@ -750,33 +746,30 @@ class Imperium
      * @return bool
      */
 
-    function searchPermission($inAllowedList=true, $action=null, $pointingResType=null)
+    static function searchPermission($inAllowedList=true, $action=null, $pointingResType=null)
     {
-        $pointingResType = $pointingResType ?: $this->resType;
+        $pointingResType = $pointingResType ?: self::$resType;
 
         //TODO: 增進效能
-        $position = $this->permissionList(true);
+        $position = self::permissionList(true);
 
         $position = $inAllowedList ? $position['allow'] : $position['deny'];
 
 
         $has = false;
-        
-        $positions = isset($position[$action]) ? [$position[$action], $position['%']] 
-                                               : [$position['%']];
 
-        foreach($positions as $action)
+        foreach([$position[$action], $position['%']] as $action)
         {
 
             foreach((array)$action as $resType => $resources)
             {
                 foreach($resources as $resource)
                 {
-                    //|| $this->resType == '%'
+                    //|| self::$resType == '%'
                     if($resType == $pointingResType || $resType == '%' )
                     {
 
-                        switch($this->detectResource())
+                        switch(self::detectResource())
                         {
                             case 'any':
                                 $has = true;
@@ -784,41 +777,41 @@ class Imperium
 
                             case 'all':
                             case NULL :
-                                if(($resource['org']   == $this->resOrg  && $resource['role'] == $this->resRole && $resource['id'] == $this->resId) ||
+                                if(($resource['org']   == self::$resOrg  && $resource['role'] == self::$resRole && $resource['id'] == self::$resId) ||
                                    ($resource['org']   == '%'            && $resource['role'] == '%'            && $resource['id'] == '%'))
                                    $has = true;
                                 break;
 
                             case 'orgRole':
-                                if(($resource['org']  == $this->resOrg  && $resource['role'] == $this->resRole) ||
+                                if(($resource['org']  == self::$resOrg  && $resource['role'] == self::$resRole) ||
                                    ($resource['org']  == '%'            && $resource['role'] == '%'))
                                    $has = true;
                                 break;
 
                             case 'orgId':
-                                if(($resource['org']  == $this->resOrg  && $resource['id']   == $this->resId) ||
+                                if(($resource['org']  == self::$resOrg  && $resource['id']   == self::$resId) ||
                                    ($resource['org']  == '%'            && $resource['id']   == '%'))
                                    $has = true;
                                 break;
 
                             case 'roleId':
-                                if(($resource['role'] == $this->resRole && $resource['id']   == $this->resId) ||
+                                if(($resource['role'] == self::$resRole && $resource['id']   == self::$resId) ||
                                    ($resource['role'] == '%'            && $resource['id']   == '%'))
                                    $has = true;
                                 break;
 
                             case 'org':
-                                if($resource['org']  == $this->resOrg  || $resource['org']  == '%')
+                                if($resource['org']  == self::$resOrg  || $resource['org']  == '%')
                                    $has = true;
                                 break;
 
                             case 'role':
-                                if($resource['role'] == $this->resRole || $resource['role'] == '%')
+                                if($resource['role'] == self::$resRole || $resource['role'] == '%')
                                    $has = true;
                                 break;
 
                             case 'id':
-                                if($resource['id']   == $this->resId   || $resource['id']   == '%')
+                                if($resource['id']   == self::$resId   || $resource['id']   == '%')
                                    $has = true;
                                 break;
 
@@ -828,7 +821,7 @@ class Imperium
             }
         }
 
-                        //if(($resType == $this->resType || $resType == '%') && ($resource === $condition))
+                        //if(($resType == self::$resType || $resType == '%') && ($resource === $condition))
                             //$has = true;
 
         return $has;
@@ -853,41 +846,41 @@ class Imperium
      * @return bool
      */
 
-    function can($actions, $resType=null, $resId=null)
+    static function can($actions, $resType=null, $resId=null)
     {
         if($resType)
-            $this->resType = $resType;
+            self::$resType = $resType;
         if($resId)
-            $this->resId   = $resId;
+            self::$resId   = $resId;
 
         $can = true;
 
-        $actions = $this->analyzeActions($actions);
+        $actions = self::analyzeActions($actions);
 
-        if($this->cannot($actions, $resType, $resId))
+        if(self::cannot($actions, $resType, $resId))
             return false;
 
 
         foreach($actions as $action)
         {
-            foreach((array)$this->resType as $resType)
+            foreach((array)self::$resType as $resType)
             {
-                if($this->relax)
+                if(self::$relax)
                 {
                     /** Stop if can, because it's relax mode */
-                    $can = $this->searchPermission(true, $action, $resType);
+                    $can = self::searchPermission(true, $action, $resType);
 
                     if($can) break;
                 }
                 else
                 {
                     /** If $can is false, just keep it as false till the end */
-                    $can = $can ? $this->searchPermission(true, $action, $resType) : false;
+                    $can = $can ? self::searchPermission(true, $action, $resType) : false;
                 }
             }
         }
 
-        $this->relax = false;
+        self::$relax = false;
 
         return $can;
     }
@@ -905,11 +898,11 @@ class Imperium
      * @return bool
      */
 
-    function canAny($actions, $resType=null, $resId=null)
+    static function canAny($actions, $resType=null, $resId=null)
     {
-        $this->relax = true;
+        self::$relax = true;
 
-        return $this->can($actions, $resType, $resId);
+        return self::can($actions, $resType, $resId);
     }
 
 
@@ -925,26 +918,26 @@ class Imperium
      * @return bool
      */
 
-    function cannot($actions, $resType=null, $resId=null)
+    static function cannot($actions, $resType=null, $resId=null)
     {
         if($resType)
-            $this->resType = $resType;
+            self::$resType = $resType;
         if($resId)
-            $this->resId   = $resId;
+            self::$resId   = $resId;
 
         $cannot = true;
 
-        $actions = $this->analyzeActions($actions);
+        $actions = self::analyzeActions($actions);
 
         foreach($actions as $action)
         {
-            foreach((array)$this->resType as $resType)
+            foreach((array)self::$resType as $resType)
             {
 
-                $isAllowed = $this->searchPermission(true, $action, $resType);
-                $isDenied  = $this->searchPermission(false, $action, $resType);
+                $isAllowed = self::searchPermission(true, $action, $resType);
+                $isDenied  = self::searchPermission(false, $action, $resType);
 
-                if($this->relax)
+                if(self::$relax)
                 {
                     $cannot = ($isDenied || !$isAllowed);
 
@@ -957,7 +950,7 @@ class Imperium
             }
         }
 
-        $this->relax = false;
+        self::$relax = false;
 
         return $cannot;
     }
@@ -975,11 +968,11 @@ class Imperium
      * @return bool
      */
 
-    function cannotAny($actions, $resType=null, $resId=null)
+    static function cannotAny($actions, $resType=null, $resId=null)
     {
-        $this->relax = true;
+        self::$relax = true;
 
-        return $this->cannot($actions, $resType, $resId);
+        return self::cannot($actions, $resType, $resId);
     }
 
 
@@ -999,9 +992,9 @@ class Imperium
      * @return bool
      */
 
-    function hasInitializedUser($id)
+    static function hasInitializedUser($id)
     {
-        return isset($this->users[$this->user]);
+        return isset(self::$users[self::$user]);
     }
 
 
@@ -1015,12 +1008,12 @@ class Imperium
      * @return Imperium
      */
 
-    function initializeUser($id)
+    static function initializeUser($id)
     {
-        $this->users[$this->user]['orgs']        = [];
-        $this->users[$this->user]['permissions'] = [];
+        self::$users[self::$user]['orgs']        = [];
+        self::$users[self::$user]['permissions'] = [];
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -1041,11 +1034,11 @@ class Imperium
      * @return Imperium
      */
 
-    function alias($name, $actions)
+    static function alias($name, $actions)
     {
-        $this->alias[$name] = $actions;
+        self::$alias[$name] = $actions;
 
-        return $this;
+        return __CLASS__;
     }
 
 
@@ -1059,15 +1052,15 @@ class Imperium
      * @return array                  The array which has actions only and no any aliases.
      */
 
-    function analyzeActions($actions)
+    static function analyzeActions($actions)
     {
         $list = [];
 
         foreach((array)$actions as $action)
         {
             /** Analyze this action because it's an alias */
-            if(isset($this->alias[$action]))
-                foreach((array)$this->alias[$action] as $aliasAction)
+            if(isset(self::$alias[$action]))
+                foreach((array)self::$alias[$action] as $aliasAction)
                     array_push($list, $aliasAction);
 
             /** Push the action to the array if it's not an alias */
@@ -1095,9 +1088,9 @@ class Imperium
      * @return Imperium
      */
 
-    function assign($roles)
+    static function assign($roles)
     {
-        $org = &$this->users[$this->user][$this->org];
+        $org = &self::$users[self::$user][self::$org];
 
         if(!isset($org))
             $org = [];
@@ -1105,7 +1098,7 @@ class Imperium
         foreach((array)$roles as $role)
             array_push($org, $role);
 
-        return $this;
+        return __CLASS__;
     }
 }
 ?>
