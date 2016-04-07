@@ -148,14 +148,17 @@ class Imperium
 
     function addOrg($org, $parent=null)
     {
-        /** Add the org in the org array */
-        $this->orgs[$org] = ['parent' => $parent];
+        if(!isset($this->orgs[$org]))
+        {
+            /** Add the org in the org array */
+            $this->orgs[$org] = ['parent' => $parent];
 
-        /** Add the org in the permission array */
-        $this->permissions['orgs'][$org] = [
-                                            'roles'       => [],
-                                            'permissions' => []
-                                           ];
+            /** Add the org in the permission array */
+            $this->permissions['orgs'][$org] = [
+                                                'roles'       => [],
+                                                'permissions' => []
+                                               ];
+        }
 
         return $this;
     }
@@ -174,8 +177,8 @@ class Imperium
 
     function addRole($roles, $inherit=null)
     {
-        foreach((array)$roles as $role)
-            $this->roles[$this->org][$role] = ['inherit' => $inherit];
+        foreach((array)$roles as $singleRole)
+            $this->roles[$this->org][$singleRole] = ['inherit' => $inherit];
 
         return $this;
     }
@@ -253,10 +256,11 @@ class Imperium
 
 
 
+
     /**
      * Whoami
      *
-     * Returns the current caller.
+     * Return the user id.
      *
      * @return int|null
      */
@@ -265,6 +269,7 @@ class Imperium
     {
         return $this->user;
     }
+
 
 
 
@@ -721,20 +726,18 @@ class Imperium
         $list = ['allow' => [],
                  'deny'  => []];
 
-        //if(!isset($this->users[$this->user]))
-        //    return $list;
+        if(!isset($this->users[$this->user]))
+            return $list;
 
         //inherit support
         foreach((array)$this->users[$this->user] as $org => $roles)
         {
             foreach((array)$roles as $role)
             {
-
-                $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
-
-                if(!isset($permissions))
+                if(!isset($this->permissions['orgs'][$org]['roles'][$role]['permissions']))
                     continue;
 
+                $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
                 $list        = array_merge_recursive($list, (array)$permissions);
             }
 
@@ -742,13 +745,11 @@ class Imperium
             $list        = array_merge_recursive($list, (array)$permissions);
         }
 
-        if(isset($this->permissions['users'][$this->user]['permissions']))
-        {
-            $permissions = $this->permissions['users'][$this->user]['permissions'];
-            $list        = array_merge_recursive($list, (array)$permissions);
-        }
+        if(!isset($this->permissions['users'][$this->user]['permissions']))
+            return $list;
 
-
+        $permissions = $this->permissions['users'][$this->user]['permissions'];
+        $list        = array_merge_recursive($list, (array)$permissions);
 
         return $list;
 
@@ -779,11 +780,12 @@ class Imperium
 
         $has = false;
 
-        if(!isset($position['%']))
+        if(isset($position[$action]) && isset($position['%']))
+            $positions = [$position[$action], $position['%']];
+        elseif(isset($position['%']))
+            $positions = [$position['%']];
+        else
             return $has;
-
-        $positions = isset($position[$action]) ? [$position[$action], $position['%']]
-                                               : [$position['%']];
 
         foreach($positions as $action)
         {
@@ -887,7 +889,7 @@ class Imperium
         if($this->cannot($actions, $resType, $resId))
             return false;
 
-
+ex
         foreach($actions as $action)
         {
             foreach((array)$this->resType as $resType)
