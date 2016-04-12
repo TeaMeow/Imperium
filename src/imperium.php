@@ -725,21 +725,24 @@ class Imperium
         //    return $list;
 
         //inherit support
-        foreach((array)$this->users[$this->user] as $org => $roles)
+        if(isset($this->users[$this->user]))
         {
-            foreach((array)$roles as $role)
+            foreach((array)$this->users[$this->user] as $org => $roles)
             {
+                foreach((array)$roles as $role)
+                {
 
-                $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
+                    $permissions = $this->permissions['orgs'][$org]['roles'][$role]['permissions'];
 
-                if(!isset($permissions))
-                    continue;
+                    if(!isset($permissions))
+                        continue;
 
+                    $list        = array_merge_recursive($list, (array)$permissions);
+                }
+
+                $permissions = $this->permissions['orgs'][$org]['permissions'];
                 $list        = array_merge_recursive($list, (array)$permissions);
             }
-
-            $permissions = $this->permissions['orgs'][$org]['permissions'];
-            $list        = array_merge_recursive($list, (array)$permissions);
         }
 
         if(isset($this->permissions['users'][$this->user]['permissions']))
